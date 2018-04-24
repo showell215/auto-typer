@@ -1,4 +1,5 @@
-// var VALID_OPTIONS = Object.freeze(['targetSelector', 'deleteInterval', 'addInterval', 'deleteDelay', 'addDelay']);
+'use strict';
+
 var CONFIG_OPTIONS = Object.freeze({
     behavior: {
         type: 'string',
@@ -58,12 +59,6 @@ function AutoTyper (options) {
 }
 
 AutoTyper.prototype = {
-    // targetSelector: '#auto-typer-target',
-    // deleteInterval: 50,
-    // addInterval: 50,
-    // deleteDelay: 5000,
-    // addDelay: 1000,
-    // behavior: 'alternate',
     logError: function (string) {
         console.error('[AutoTyper] [ERROR] ' + string);
     },
