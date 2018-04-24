@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>Auto Typer Test Page</title>
+    </head>
+    <body>
+        <div class="widgets" id="typing-widget-target-1" data-auto-typer-text="Hello this is a test, of the typing widget."></div>
+        <div class="widgets" id="typing-widget-target-2" data-auto-typer-text="This is a second widget"></div>
+        <div class="widgets" id="typing-widget-target-3" data-auto-typer-text="And this is a third widget"></div>
+        <script src="index.js"></script>
+        <script>
+            window.addEventListener("DOMContentLoaded", function () {
+                /*[].slice.call(document.querySelectorAll(".widgets"))
+                    .forEach(function (widget) {
+                        new AutoTyper({targetSelector: "#" + widget.getAttribute("id")});
+                        // autoTyper.init.bind(autoTyper);
+                        setTimeout(new AutoTyper({targetSelector: "#" + widget.getAttribute("id")}).init());
+                    });*/
+                // var autoTyper = new AutoTyper();
+                setTimeout(new AutoTyper({targetSelector: "#typing-widget-target-1", addInterval: 50, behavior: 'blob'}).init());
+                setTimeout(new AutoTyper({targetSelector: "#typing-widget-target-2", addInterval: 100}).init());
+                setTimeout(new AutoTyper({targetSelector: "#typing-widget-target-3", addInterval: 150}).init());
+                
+            });
+        </script>
+    </body>
+</html>
