@@ -6,7 +6,7 @@ var CONFIG_OPTIONS = Object.freeze({
         validOptions: ['alternate', 'write', 'delete'],
         default: 'alternate' 
     }, 
-    cursor: {
+    cursorOn: {
         type: 'boolean',
         default: true
     },
@@ -71,6 +71,10 @@ AutoTyper.prototype = {
             this.logError('Target element must have a "data-typing-widget-text" attribute containing an array of strings')
             return;
         }
+        
+        if (this.cursorOn) {
+            this.addCursorElement();
+        }
 
         this.addWidgetText();
     },
@@ -99,7 +103,38 @@ AutoTyper.prototype = {
             setTimeout(that.addWidgetText.bind(that), that.addDelay);
           }
       }, that.deleteInterval)
+    },
+    addCursorElement: function () {
+        var baseFontSize = window.getComputedStyle(this.targetElement).getPropertyValue("font-size"),
+            // cursor looks best about 1.5 times the font size
+            cursorSize = parseFloat(baseFontSize.substring(0, baseFontSize.length - 2)) * 1.5 + "px",
+            cursorElement = document.createElement("span"),
+            cursorStyleElement = document.createElement("style");
+        
+        cursorStyleElement.type = "text/css";
+        cursorStyleElement.appendChild(document.createTextNode(
+            ".auto-typer-cursor {" +
+                "animation: cursor-blink steps(1) 400ms infinite alternate;" +
+                "font-size: " + cursorSize + ";" +
+                "top: 2px;" +
+                // "right: 7px;" +
+                "position: relative;" +
+                "color: gray;" +
+            "}" +
+            // cursor pseudo-element
+            ".auto-typer-cursor::after { content: \"|\"; }" +
+            // blink keyframes
+            "@keyframes cursor-blink {" +
+                "0% { visibility: visible;}" +
+                "50% { visibility: hidden;}" +
+                "100% { visibility: visible;}" +
+            "}"
+        ));
+        document.head.appendChild(cursorStyleElement);
+        cursorElement.className = "auto-typer-cursor";
+        this.targetElement.parentNode.insertBefore(cursorElement, this.targetElement.nextSibling);
     }
+  
 }
 
 // add default options to prototype
