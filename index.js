@@ -115,7 +115,7 @@ AutoTyper.prototype = {
         cursorStyleElement.appendChild(document.createTextNode(
             ".auto-typer-cursor {" +
                 "animation: cursor-blink steps(1) 400ms infinite alternate;" +
-                "font-size: " + cursorSize + ";" +
+                // "font-size: " + cursorSize + ";" +
                 "top: 2px;" +
                 // "right: 7px;" +
                 "position: relative;" +

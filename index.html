@@ -1,103 +1,207 @@
 <html>
     <head>
         <title>Auto Typer Test Page</title>
+        <style>
+            body {
+                margin: 20px;
+            }
+            .config-example {
+                background: lightgray;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            #config-changer {
+                width: calc(35% - 44px);
+                display: inline-block;
+                float: left;
+                border: 2px solid black;
+            }
+            #demo {
+                width: calc(65% - 84px);
+                display: inline-block;
+                float: left;
+                border: 2px black solid;
+                padding: 20px;
+                font-size: 3rem;
+            }
+            #auto-typer-target {
+                /* line-height: 32px; */
+            }
+            .auto-typer-cursor {
+                /* line-height: 26px; */
+            }
+            #config-form {
+                padding: 20px;
+                background: beige;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin: 0;
+            }
+            .hidden {
+                display: none;
+            }
+            .highlight {
+                background-color: yellow;
+            }
+            .config-entry {
+                transition: background-color .5s ease-in-out;
+            }
+            section {
+                margin: 20px;
+            }
+            @media only screen and (max-width: 759px) {
+                #demo, #config-changer {
+                    width: 100%;
+                }
+            }
+        </style>
     </head>
     <body>
-        <span id="auto-typer-target" data-auto-typer-text="Hello this is a test,...,A test of the typing widget."></span>
-        <form style="text-align: center">
-            <div>
-                <h2>Delete interval</h2>
-                <input value="100" list="delete-interval-tickmarks" type="range" min="0" max="1000" step="100" id="deleteInterval" onchange="updateValue(this.id, this.value)">
-                <datalist id="delete-interval-tickmarks">
-                  <option value="0">
-                  <option value="100">
-                  <option value="200">
-                  <option value="300">
-                  <option value="400">
-                  <option value="500">
-                  <option value="600">
-                  <option value="700">
-                  <option value="800">
-                  <option value="900">
-                  <option value="1000">
-                </datalist>
-                <div><label for="deleteInterval">100</label></div>
-            </div>
-            <div>
-                <h2>Add interval</h2>
-                <input value="100" list="add-interval-tickmarks" type="range" min="0" max="1000" step="100" id="addInterval" onchange="updateValue(this.id, this.value)">
-                <datalist id="add-interval-tickmarks">
-                  <option value="0">
-                  <option value="100">
-                  <option value="200">
-                  <option value="300">
-                  <option value="400">
-                  <option value="500">
-                  <option value="600">
-                  <option value="700">
-                  <option value="800">
-                  <option value="900">
-                  <option value="1000">
-                </datalist>
-                <div><label for="addInterval">100</label></div>
-            </div>
-            <div>
-                <h2>Delete delay</h2>
-                <input value="1000" list="delete-delay-tickmarks" type="range" min="0" max="5000" step="500" id="deleteDelay" onchange="updateValue(this.id, this.value)">
-                <datalist id="delete-delay-tickmarks">
-                  <option value="0">
-                  <option value="500">
-                  <option value="1000">
-                  <option value="1500">
-                  <option value="2000">
-                  <option value="2500">
-                  <option value="3000">
-                  <option value="3500">
-                  <option value="4000">
-                  <option value="4500">
-                  <option value="5000">
-                </datalist>
-                <div><label for="deleteDelay">100</label></div>
-            </div>
-            <div>
-                <h2>Add delay</h2>
-                <input value="1000" list="add-delay-tickmarks" type="range" min="0" max="5000" step="500" id="addDelay" onchange="updateValue(this.id, this.value)">
-                <datalist id="add-delay-tickmarks">
-                  <option value="0">
-                  <option value="500">
-                  <option value="1000">
-                  <option value="1500">
-                  <option value="2000">
-                  <option value="2500">
-                  <option value="3000">
-                  <option value="3500">
-                  <option value="4000">
-                  <option value="4500">
-                  <option value="5000">
-                </datalist>
-                <div><label for="addDelay">100</label></div>
-            </div>
-            <div>
-                <h2>Cursor on?</h2>
-                <input name="cursor" type="radio" value="true" id="cursor-on" onchange="updateValue(this.name, this.value)">
-                <label for="cursor">true</label>
-                <input name="cursor" type="radio" value="false" id="cursor-on" onchange="updateValue(this.name, this.value)">
-                <label for="cursor">false</label>
+        <div style="display: flex; flex-direction: row">
+            <section id="config-changer">
+                <div class="config-example">
+                    <code>
+                        <div>{</div>
+                        <div class="config-entry deleteInterval">
+                            <span>&nbsp&nbsp</span><span>deleteInterval: </span><span class="config-value">100</span>,
+                        </div>
+                        <div class="config-entry addInterval">
+                            <span>&nbsp&nbsp</span><span>addInterval: </span><span class="config-value">100</span>,
+                        </div>
+                        <div class="config-entry deleteDelay">
+                            <span>&nbsp&nbsp</span><span>deleteDelay: </span><span class="config-value">1000</span>,
+                        </div>
+                        <div class="config-entry addDelay">
+                            <span>&nbsp&nbsp</span><span>addDelay: </span><span class="config-value">1000</span>,
+                        </div>
+                        <div class="config-entry cursorOn">
+                            <span>&nbsp&nbsp</span><span>cursorOn: </span><span class="config-value">true</span>,
+                        </div>
+                    
+                        <div>}</div>
+                    </code>
+                </div>
+                <form id="config-form">
+                    <div>
+                        <h2>Delete interval</h2>
+                        <input value="100" list="delete-interval-tickmarks" type="range" min="0" max="1000" step="100" id="deleteInterval" onchange="updateValue(this.id, this.value)">
+                        <datalist id="delete-interval-tickmarks">
+                          <option value="0">
+                          <option value="100">
+                          <option value="200">
+                          <option value="300">
+                          <option value="400">
+                          <option value="500">
+                          <option value="600">
+                          <option value="700">
+                          <option value="800">
+                          <option value="900">
+                          <option value="1000">
+                        </datalist>
+                        <div><label for="deleteInterval">100</label></div>
+                    </div>
+                    <div>
+                        <h2>Add interval</h2>
+                        <input value="100" list="add-interval-tickmarks" type="range" min="0" max="1000" step="100" id="addInterval" onchange="updateValue(this.id, this.value)">
+                        <datalist id="add-interval-tickmarks">
+                          <option value="0">
+                          <option value="100">
+                          <option value="200">
+                          <option value="300">
+                          <option value="400">
+                          <option value="500">
+                          <option value="600">
+                          <option value="700">
+                          <option value="800">
+                          <option value="900">
+                          <option value="1000">
+                        </datalist>
+                        <div><label for="addInterval">100</label></div>
+                    </div>
+                    <div>
+                        <h2>Delete delay</h2>
+                        <input value="1000" list="delete-delay-tickmarks" type="range" min="0" max="5000" step="500" id="deleteDelay" onchange="updateValue(this.id, this.value)">
+                        <datalist id="delete-delay-tickmarks">
+                          <option value="0">
+                          <option value="500">
+                          <option value="1000">
+                          <option value="1500">
+                          <option value="2000">
+                          <option value="2500">
+                          <option value="3000">
+                          <option value="3500">
+                          <option value="4000">
+                          <option value="4500">
+                          <option value="5000">
+                        </datalist>
+                        <div><label for="deleteDelay">100</label></div>
+                    </div>
+                    <div>
+                        <h2>Add delay</h2>
+                        <input value="1000" list="add-delay-tickmarks" type="range" min="0" max="5000" step="500" id="addDelay" onchange="updateValue(this.id, this.value)">
+                        <datalist id="add-delay-tickmarks">
+                          <option value="0">
+                          <option value="500">
+                          <option value="1000">
+                          <option value="1500">
+                          <option value="2000">
+                          <option value="2500">
+                          <option value="3000">
+                          <option value="3500">
+                          <option value="4000">
+                          <option value="4500">
+                          <option value="5000">
+                        </datalist>
+                        <div><label for="addDelay">100</label></div>
+                    </div>
+                    <div>
+                        <h2>Cursor on?</h2>
+                        <input checked name="cursorOn" type="radio" value="true" id="cursor-on" onchange="updateValue(this.name, this.value)">
+                        <label for="cursor-on">true</label>
+                        <input name="cursorOn" type="radio" value="false" id="cursor-off" onchange="updateValue(this.name, this.value)">
+                        <label for="cursor-off">false</label>
+                    </div>
+            
                 
-            </div>
-
-        
-        </form>
+                </form>
+            </section>
+            <section id="demo">
+                <span id="auto-typer-target" data-auto-typer-text="Hello this is a test,...,A test of the typing widget."></span>
+            </section>
+        </div>
         <script src="index.js"></script>
         <script>
             var autoTyper;
 
             function updateValue (id, value) {
                 console.log(id, value);
-                document.querySelector("label[for='" + id + "'").textContent = value;
-                autoTyper[id] = value;
+                var label, thisConfigEntry;
+                if (label = document.querySelector("label[for='" + id + "'")) {
+                    label.textContent = value;
+                }
+                // document.querySelector("label[for='" + id + "'").textContent = value;
+                thisConfigEntry = document.querySelector(".config-entry." + id);
+                thisConfigEntry.classList.add("highlight");
+                setTimeout(function () {
+                    thisConfigEntry.classList.remove("highlight");
+                }, 1500);
+                thisConfigEntry.querySelector(".config-value").textContent = value;
+                updateAutoTyperOption(id, value);
             }
             
+            function updateAutoTyperOption (id, value) {
+                switch (id) {
+                    case 'cursorOn':
+                        document.querySelector('.auto-typer-cursor').classList.toggle('hidden');
+                        break;
+                    default:
+                        autoTyper[id] = value;
+                        break;    
+                }
+            }
             window.addEventListener("DOMContentLoaded", function () {
                 autoTyper = new AutoTyper();
                 autoTyper.init();
