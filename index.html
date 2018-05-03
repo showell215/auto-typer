@@ -80,9 +80,16 @@
                         <div class="config-entry cursorOn">
                             <span>&nbsp&nbsp</span><span>cursorOn: </span><span class="config-value">true</span>,
                         </div>
-                    
+                        <div class="config-entry behavior">
+                            <span>&nbsp&nbsp</span><span>behavior: </span><span>"</span><span class="config-value">alternate</span><span>"</span>
+                        </div>
                         <div>}</div>
                     </code>
+                </div>
+                <div style="text-align: center; padding: 20px">
+                    <button onclick="restart(autoTyper.customOptions)">Restart with same settings</button>
+                    <button onclick="restart()">Reset</button>
+                    <!-- TODO bind values to labels and object -->
                 </div>
                 <form id="config-form">
                     <div>
@@ -158,18 +165,28 @@
                         <div><label for="addDelay">100</label></div>
                     </div>
                     <div>
-                        <h2>Cursor on?</h2>
+                        <h2>Cursor on/off</h2>
                         <input checked name="cursorOn" type="radio" value="true" id="cursor-on" onchange="updateValue(this.name, this.value)">
                         <label for="cursor-on">true</label>
                         <input name="cursorOn" type="radio" value="false" id="cursor-off" onchange="updateValue(this.name, this.value)">
                         <label for="cursor-off">false</label>
                     </div>
-            
+                    <div>
+                        <h2>Behavior</h2>
+                        <!-- <input checked name="cursorOn" type="radio" value="true" id="cursor-on" onchange="updateValue(this.name, this.value)">
+                        <label for="cursor-on">true</label>
+                        <input name="cursorOn" type="radio" value="false" id="cursor-off" onchange="updateValue(this.name, this.value)">
+                        <label for="cursor-off">false</label> -->
+                        <select name="behavior" id="behavior" onchange="updateValue(this.id, this.value)">
+                            <option value="alternate" selected>Alternate</option>
+                            <option value="writeOnly">Write only</option>
+                        </select>
+                    </div>
                 
                 </form>
             </section>
             <section id="demo">
-                <span id="auto-typer-target" data-auto-typer-text="Hello this is a test,...,A test of the typing widget."></span>
+                <span id="auto-typer-target" data-auto-typer-text="This is a test., And this is a second test., Third test."></span>
             </section>
         </div>
         <script src="index.js"></script>
@@ -183,7 +200,7 @@
                     label.textContent = value;
                 }
                 // document.querySelector("label[for='" + id + "'").textContent = value;
-                thisConfigEntry = document.querySelector(".config-entry." + id);
+                thisConfigEntry = document.querySelector(".config-entry" + "." + id);
                 thisConfigEntry.classList.add("highlight");
                 setTimeout(function () {
                     thisConfigEntry.classList.remove("highlight");
@@ -197,11 +214,22 @@
                     case 'cursorOn':
                         document.querySelector('.auto-typer-cursor').classList.toggle('hidden');
                         break;
+                    case 'behavior':
+                        restart(Object.assign(autoTyper.customOptions, {behavior: value}));
+                        break;
                     default:
                         autoTyper[id] = value;
-                        break;    
+                        break; 
                 }
             }
+
+            function restart (options) {
+                autoTyper.destroy();
+                autoTyper = null;
+                autoTyper = new AutoTyper(options);
+                autoTyper.init();
+            }
+
             window.addEventListener("DOMContentLoaded", function () {
                 autoTyper = new AutoTyper();
                 autoTyper.init();

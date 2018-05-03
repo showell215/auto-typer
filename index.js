@@ -3,7 +3,7 @@
 var CONFIG_OPTIONS = Object.freeze({
     behavior: {
         type: 'string',
-        validOptions: ['alternate', 'write', 'delete'],
+        validOptions: ['alternate', 'writeOnly'],
         default: 'alternate' 
     }, 
     cursorOn: {
@@ -24,9 +24,13 @@ var CONFIG_OPTIONS = Object.freeze({
     },
     deleteDelay: {
         type: 'number',
-        default: 5000
+        default: 1000
     }, 
     addDelay: {
+        type: 'number',
+        default: 1000
+    },
+    delay: {
         type: 'number',
         default: 1000
     }
@@ -34,6 +38,10 @@ var CONFIG_OPTIONS = Object.freeze({
 
 function AutoTyper (options) {
     var that = this;
+    // set up instance-specific objects
+    this.activeTimeouts = [];
+    this.additionalElements = [];
+    this.customOptions = {};
     // start at the first string in the array
     this.currentIndex = 0;
     // process options object if passed and set any valid options
@@ -48,12 +56,15 @@ function AutoTyper (options) {
                 matchedConfigOption.validOptions.indexOf(options[optionName]) > -1)
             ) {
                 // this is a valid option, add it to this instance
+                that.customOptions[optionName] = options[optionName];
                 that[optionName] = options[optionName];
             } else {
                 console.warn('Invalid configuration option "' + optionName + '"');
             }
         });
     }
+    
+    
 
     return this;
 }
@@ -71,11 +82,11 @@ AutoTyper.prototype = {
             this.logError('Target element must have a "data-typing-widget-text" attribute containing an array of strings')
             return;
         }
-        
+
         if (this.cursorOn) {
             this.addCursorElement();
         }
-
+        // start typing
         this.addWidgetText();
     },
     addWidgetText: function () {
@@ -88,26 +99,42 @@ AutoTyper.prototype = {
               i += 1;
             } else {
               clearInterval(that.addIntervalId);
-              that.currentIndex = ++that.currentIndex >= that.stringsToType.length ? 0 : that.currentIndex;
-              setTimeout(that.removeWidgetText.bind(that), that.deleteDelay);
+              that.currentIndex += 1;
+
+              switch (that.behavior) {
+                  case 'alternate':
+                    that.currentIndex = that.currentIndex >= that.stringsToType.length ? 0 : that.currentIndex;
+                    that.activeTimeouts.push(setTimeout(that.removeWidgetText.bind(that), that.deleteDelay));
+                    break;
+                  case 'writeOnly':
+                    // in write only mode, stop after typing all strings once
+                    if (that.currentIndex < that.stringsToType.length) {
+                        that.activeTimeouts.push(setTimeout(that.addWidgetText.bind(that), that.addDelay));
+                    }
+                    break;
+                  default:
+                    throw new Error('Non-matching behavior: ' + that.behavior);
+                    break;
+              }
             }
         }, that.addInterval);
     },
-    removeWidgetText: function () {
+    removeWidgetText: function (cb) {
         var that = this;
           that.removeIntervalId = setInterval(function () {
-          if (that.targetElement.textContent.length) {
-            that.targetElement.textContent = that.targetElement.textContent.slice(0, -1);
-          } else {
-            clearInterval(that.removeIntervalId);
-            setTimeout(that.addWidgetText.bind(that), that.addDelay);
-          }
+              if (that.targetElement.textContent.length) {
+                that.targetElement.textContent = that.targetElement.textContent.slice(0, -1);
+              } else {
+                clearInterval(that.removeIntervalId);
+                that.activeTimeouts.push(setTimeout(that.addWidgetText.bind(that), that.addDelay));
+                // TODO how to clean up timeouts once they are run?
+              }
       }, that.deleteInterval)
     },
     addCursorElement: function () {
         var baseFontSize = window.getComputedStyle(this.targetElement).getPropertyValue("font-size"),
-            // cursor looks best about 1.5 times the font size
-            cursorSize = parseFloat(baseFontSize.substring(0, baseFontSize.length - 2)) * 1.5 + "px",
+            // cursor looks best about 1.2 times the font size
+            cursorSize = parseFloat(baseFontSize.substring(0, baseFontSize.length - 2)) * 1.2 + "px",
             cursorElement = document.createElement("span"),
             cursorStyleElement = document.createElement("style");
         
@@ -115,7 +142,7 @@ AutoTyper.prototype = {
         cursorStyleElement.appendChild(document.createTextNode(
             ".auto-typer-cursor {" +
                 "animation: cursor-blink steps(1) 400ms infinite alternate;" +
-                // "font-size: " + cursorSize + ";" +
+                "font-size: " + cursorSize + ";" +
                 "top: 2px;" +
                 // "right: 7px;" +
                 "position: relative;" +
@@ -133,11 +160,58 @@ AutoTyper.prototype = {
         document.head.appendChild(cursorStyleElement);
         cursorElement.className = "auto-typer-cursor";
         this.targetElement.parentNode.insertBefore(cursorElement, this.targetElement.nextSibling);
+        this.additionalElements.push(cursorElement);
+    },
+    destroy: function () {
+        // clear any timeouts that are active
+        this.activeTimeouts.forEach(function (timeoutId) {
+            clearTimeout(timeoutId);
+        });
+        // clear any intervals that are active
+        clearInterval(this.addIntervalId);
+        clearInterval(this.removeIntervalId);
+        // remove cursor element and any others besides target
+        this.additionalElements.forEach(function (el) {
+            el.parentElement.removeChild(el);
+        });
+        // clear content of target element
+        this.targetElement.innerHTML = null;
+        
     }
-  
 }
 
 // add default options to prototype
 Object.keys(CONFIG_OPTIONS).forEach(function (optionName) {
     AutoTyper.prototype[optionName] = CONFIG_OPTIONS[optionName].default;
 });
+
+////////////////
+// alternate ///
+////////////////
+/*
+1. if startEmpty
+    2. add first string
+1. else
+    2. start with first string initialized
+3. remove 1st string
+4. add 2nd string
+5. repeat 3,4 for strings 3...n
+*/
+
+////////////////
+// addOnly ///
+////////////////
+/*
+1. add string 1.
+2. add string 2...n
+3. end
+
+*/
+
+
+////////////////
+// removeOnly ///
+////////////////
+/*
+1. add 
+*/
