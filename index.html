@@ -60,6 +60,9 @@
         </style>
     </head>
     <body>
+        <div>
+            <a href="https://github.com/showell215/auto-typer">See on Github</a>
+        </div>
         <div style="display: flex; flex-direction: row">
             <section id="config-changer">
                 <div class="config-example">
@@ -226,12 +229,12 @@
             function restart (options) {
                 autoTyper.destroy();
                 autoTyper = null;
-                autoTyper = new AutoTyper(options);
+                autoTyper = new window.AutoTyper(options);
                 autoTyper.init();
             }
 
             window.addEventListener("DOMContentLoaded", function () {
-                autoTyper = new AutoTyper();
+                autoTyper = new window.AutoTyper();
                 autoTyper.init();
             });
         </script>
