@@ -210,7 +210,14 @@
     </div>
     <script src="https://cdn.jsdelivr.net/gh/showell215/auto-typer/index.js"></script>
     <script>
-        var autoTyper;
+        var autoTyperTargetElement = document.querySelector("#auto-typer-target"),
+            autoTyper;
+
+        function setAutoTyperStrings (stringArray) {
+            autoTyperTargetElement.dataset.autoTyperText = stringArray.join(",");
+            restart(autoTyper.customOptions);
+
+        }
 
         function updateValue(id, value) {
             console.log(id, value);
@@ -242,6 +249,7 @@
         }
 
         function restart(options) {
+            console.log(options);
             autoTyper.destroy();
             autoTyper = null;
             autoTyper = new AutoTyper(options);
